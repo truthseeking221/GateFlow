@@ -1,28 +1,32 @@
-import { Zap } from 'lucide-react';
+import { ArrowRight, Zap } from 'lucide-react';
 
 export default function MarqueeSection() {
-  const items1 = ['GATEFLOW ENGINE', '•', 'UNIFIED AI GATEWAY', '•', 'ZERO LATENCY', '•', '100+ MODELS', '•'];
-  const items2 = ['UNLIMITED SCALE', '•', 'SMART ROUTING', '•', 'ENTERPRISE READY', '•', 'GLOBAL EDGE', '•'];
+  const items1 = ['GATEFLOW ENGINE', 'UNIFIED AI GATEWAY', 'ZERO LATENCY', '100+ MODELS', 'SMART ROUTING'];
+  const items2 = ['UNLIMITED SCALE', 'ENTERPRISE READY', 'GLOBAL EDGE', 'BYPASS LIMITS', 'ZERO LOGS'];
 
   return (
-    <section className="py-24 md:py-32 relative bg-black overflow-hidden font-sans border-y border-white/10 flex flex-col justify-center">
+    <section className="py-32 relative bg-black overflow-hidden font-sans border-b border-t border-white/10 flex flex-col justify-center w-full">
 
       {/* Grid Pattern Background */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:64px_64px] pointer-events-none z-0 opacity-50 mask-radial-fade" />
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:64px_64px] pointer-events-none z-0 opacity-30" />
 
-      <div className="relative z-10 flex flex-col gap-6 md:gap-10 -rotate-3 scale-[1.05] md:scale-110">
+      {/* Marquee Tracks container */}
+      <div className="relative z-10 flex flex-col gap-8 w-full">
 
         {/* Track 1 - Outline Fast moving right-to-left */}
         <div
-          className="marquee-track flex whitespace-nowrap opacity-40 mix-blend-screen w-max"
-          style={{ animationDuration: '35s' }}
+          className="marquee-track flex whitespace-nowrap opacity-10 w-max"
+          style={{ animationDuration: '50s' }}
         >
           {[0, 1].map((group) => (
             <div key={group} className="flex items-center">
               {items1.map((text, i) => (
-                <span key={`${group}-${i}`} className="flex items-center text-[4rem] md:text-[7rem] font-sans font-bold text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.2)] mx-6 md:mx-12 uppercase tracking-tighter">
-                  {text === '•' ? <Zap className="w-10 h-10 md:w-16 md:h-16 text-white/20 mx-2" /> : text}
-                </span>
+                <div key={`${group}-${i}`} className="flex items-center mx-8">
+                  <span className="text-5xl md:text-[6rem] font-sans font-bold text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.8)] uppercase tracking-tighter">
+                    {text}
+                  </span>
+                  <div className="w-2 h-2 md:w-3 md:h-3 rounded-full bg-white/40 mx-12"></div>
+                </div>
               ))}
             </div>
           ))}
@@ -30,15 +34,18 @@ export default function MarqueeSection() {
 
         {/* Track 2 - Solid, moving left-to-right */}
         <div
-          className="marquee-track flex whitespace-nowrap mix-blend-screen w-max"
-          style={{ animationDirection: 'reverse', animationDuration: '45s' }}
+          className="marquee-track flex whitespace-nowrap opacity-[0.15] w-max"
+          style={{ animationDirection: 'reverse', animationDuration: '60s' }}
         >
           {[0, 1].map((group) => (
             <div key={group} className="flex items-center">
               {items2.map((text, i) => (
-                <span key={`${group}-${i}`} className={`flex items-center text-[4.5rem] md:text-[8rem] font-sans font-bold mx-6 md:mx-12 uppercase tracking-tighter ${text === '•' ? '' : 'text-white'}`}>
-                  {text === '•' ? <Zap className="w-12 h-12 md:w-20 md:h-20 text-white/80 mx-2" /> : text}
-                </span>
+                <div key={`${group}-${i}`} className="flex items-center mx-8">
+                  <span className="text-5xl md:text-[6rem] font-sans font-bold text-white uppercase tracking-tighter">
+                    {text}
+                  </span>
+                  <div className="w-2 h-2 md:w-3 md:h-3 rounded-full bg-white/40 mx-12"></div>
+                </div>
               ))}
             </div>
           ))}
@@ -46,15 +53,18 @@ export default function MarqueeSection() {
 
         {/* Track 3 - Outline Fast moving right-to-left */}
         <div
-          className="marquee-track flex whitespace-nowrap opacity-40 mix-blend-screen w-max"
-          style={{ animationDuration: '28s' }}
+          className="marquee-track flex whitespace-nowrap opacity-10 w-max"
+          style={{ animationDuration: '45s' }}
         >
           {[0, 1].map((group) => (
             <div key={group} className="flex items-center">
               {items1.map((text, i) => (
-                <span key={`${group}-${i}`} className="flex items-center text-[4rem] md:text-[7rem] font-sans font-bold text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.2)] mx-6 md:mx-12 uppercase tracking-tighter">
-                  {text === '•' ? <Zap className="w-10 h-10 md:w-16 md:h-16 text-white/20 mx-2" /> : text}
-                </span>
+                <div key={`${group}-${i}`} className="flex items-center mx-8">
+                  <span className="text-5xl md:text-[6rem] font-sans font-bold text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.8)] uppercase tracking-tighter">
+                    {text}
+                  </span>
+                  <div className="w-2 h-2 md:w-3 md:h-3 rounded-full bg-white/40 mx-12"></div>
+                </div>
               ))}
             </div>
           ))}
@@ -62,16 +72,31 @@ export default function MarqueeSection() {
 
       </div>
 
-      {/* Center CTA Button Overlay */}
+      {/* Center CTA Overlay with Glassmorphism to hide text under it */}
       <div className="absolute inset-0 z-30 flex items-center justify-center pointer-events-none">
-        <div className="pointer-events-auto">
+        <div className="pointer-events-auto flex flex-col items-center gap-6 bg-black/40 backdrop-blur-md border border-white/10 px-12 py-10 md:px-20 md:py-16 rounded-3xl shadow-[0_0_80px_rgba(0,0,0,1)] text-center relative overflow-hidden">
+
+          {/* Subtle glow behind the box */}
+          <div className="absolute inset-0 bg-gradient-to-br from-[#4ade80]/10 to-transparent opacity-50 z-0 pointer-events-none" />
+
+          <div className="relative z-10 w-16 h-16 rounded-2xl bg-black border border-white/20 flex items-center justify-center shadow-[0_0_40px_rgba(74,222,128,0.2)] mb-2">
+            <Zap className="w-8 h-8 text-[#4ade80]" />
+          </div>
+
+          <h2 className="relative z-10 text-4xl md:text-5xl font-bold font-sans tracking-tight text-white mb-2">
+            Ready to scale?
+          </h2>
+          <p className="relative z-10 text-white/50 font-medium mb-4 max-w-sm">
+            Join thousands of developers building the future without rate limits.
+          </p>
+
           <a
             href="#pricing"
-            className="group relative inline-flex items-center justify-center px-10 py-4 font-sans font-medium text-sm text-black transition-all bg-white rounded-full hover:bg-neutral-200 shadow-[0_0_40px_rgba(255,255,255,0.1)]"
+            className="relative z-10 group inline-flex items-center justify-center px-8 py-4 font-sans font-bold text-sm text-black transition-all bg-white rounded-md hover:bg-neutral-200"
           >
-            <span className="relative z-10 flex items-center gap-2">
-              <Zap className="w-4 h-4 text-black group-hover:scale-110 transition-transform" />
-              START BUILDING
+            <span className="flex items-center gap-2">
+              Start Building Now
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </span>
           </a>
         </div>
