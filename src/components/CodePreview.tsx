@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useRevealOnScroll } from '../hooks/useRevealOnScroll';
+import { useLinesWebGL } from '../hooks/useLinesWebGL';
 
 const snippets = {
   node: {
@@ -53,9 +54,12 @@ type Lang = keyof typeof snippets;
 export default function CodePreview() {
   const [lang, setLang] = useState<Lang>('node');
   const sectionRef = useRevealOnScroll<HTMLElement>();
+  const canvasRef = useLinesWebGL();
 
   return (
-    <section id="docs" ref={sectionRef} className="max-w-7xl mx-auto px-6 pb-24 pt-24 relative bg-black font-sans border-b border-white/10">
+    <section id="docs" ref={sectionRef} className="max-w-7xl mx-auto px-6 pb-24 pt-24 relative bg-black font-sans border-b border-white/10 overflow-hidden">
+      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none opacity-50 z-0 mix-blend-screen" />
+
       <div className="flex flex-col items-center text-center mb-16 relative z-10">
         <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/[0.02] border border-white/[0.08] rounded-full mb-6 relative font-sans text-[11px] text-[#4ade80] uppercase tracking-widest font-medium">
           <span className="w-1.5 h-1.5 bg-[#4ade80] rounded-full" />
@@ -90,8 +94,8 @@ export default function CodePreview() {
                   key={key}
                   onClick={() => setLang(key)}
                   className={`px-6 py-4 text-[13px] font-sans font-medium transition-colors text-left border-b-2 md:border-b-0 md:border-l-2 ${lang === key
-                      ? 'text-white border-[#4ade80] bg-white/[0.04]'
-                      : 'text-white/50 hover:text-white border-transparent hover:bg-white/[0.02]'
+                    ? 'text-white border-[#4ade80] bg-white/[0.04]'
+                    : 'text-white/50 hover:text-white border-transparent hover:bg-white/[0.02]'
                     }`}
                 >
                   {snippets[key].label}

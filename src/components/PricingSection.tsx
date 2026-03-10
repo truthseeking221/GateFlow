@@ -1,4 +1,5 @@
 import { useRevealOnScroll } from '../hooks/useRevealOnScroll';
+import { useGridWebGL } from '../hooks/useGridWebGL';
 import { Check } from 'lucide-react';
 
 const tiers = [
@@ -33,10 +34,13 @@ const tiers = [
 
 export default function PricingSection() {
   const sectionRef = useRevealOnScroll<HTMLElement>();
+  const canvasRef = useGridWebGL();
 
   return (
-    <section id="pricing" ref={sectionRef} className="max-w-7xl mx-auto pt-24 px-6 pb-24 relative bg-black font-sans border-b border-white/10">
-      <div className="mb-16 flex flex-col items-center justify-center text-center pb-12">
+    <section id="pricing" ref={sectionRef} className="max-w-7xl mx-auto pt-24 px-6 pb-24 relative bg-black font-sans border-b border-white/10 overflow-hidden">
+      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none opacity-20 z-0 mix-blend-screen" />
+
+      <div className="mb-16 flex flex-col items-center justify-center text-center pb-12 relative z-10">
         <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/[0.02] border border-white/[0.08] rounded-full mb-6 relative font-sans text-[11px] text-[#4ade80] uppercase tracking-widest font-medium">
           <span className="w-1.5 h-1.5 bg-[#4ade80] rounded-full" />
           Pricing
@@ -93,8 +97,8 @@ export default function PricingSection() {
 
               <button
                 className={`w-full py-3 rounded-md text-sm font-medium transition-colors ${tier.popular
-                    ? 'bg-white text-black hover:bg-neutral-200'
-                    : 'bg-white/[0.02] border border-white/10 text-white hover:bg-white/10'
+                  ? 'bg-white text-black hover:bg-neutral-200'
+                  : 'bg-white/[0.02] border border-white/10 text-white hover:bg-white/10'
                   }`}
               >
                 {tier.cta}

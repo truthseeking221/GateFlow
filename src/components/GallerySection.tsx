@@ -1,12 +1,16 @@
 import { useRevealOnScroll } from '../hooks/useRevealOnScroll';
+import { useParticlesWebGL } from '../hooks/useParticlesWebGL';
 import { Activity, Code } from 'lucide-react';
 
 export default function GallerySection() {
   const sectionRef = useRevealOnScroll<HTMLElement>();
+  const canvasRef = useParticlesWebGL();
 
   return (
-    <section ref={sectionRef} className="bg-black border-b border-white/10 font-sans">
-      <div className="max-w-7xl mx-auto pt-24 px-6 pb-24 relative">
+    <section ref={sectionRef} className="bg-black border-b border-white/10 font-sans overflow-hidden relative">
+      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none opacity-40 z-0 mix-blend-screen" />
+
+      <div className="max-w-7xl mx-auto pt-24 px-6 pb-24 relative z-10">
         {/* Header */}
         <div className="mb-16 flex flex-col items-center border-b border-white/10 pb-12 text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/[0.02] border border-white/[0.08] rounded-full mb-6 relative font-sans text-[11px] text-[#4ade80] uppercase tracking-widest font-medium">

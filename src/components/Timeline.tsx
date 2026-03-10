@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useGridWebGL } from '../hooks/useGridWebGL';
 
 const phases = [
   { num: '01', title: 'Connect Endpoint', desc: 'Change your baseURL to point to the GateFlow API. Zero other code changes needed. Drop-in compatible.' },
@@ -8,6 +9,7 @@ const phases = [
 
 export default function Timeline() {
   const sectionRef = useRef<HTMLElement>(null);
+  const canvasRef = useGridWebGL();
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -43,6 +45,8 @@ export default function Timeline() {
       id="liquid-timeline"
       className="overflow-hidden pt-24 pb-24 relative bg-black font-sans border-b border-white/10"
     >
+      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none opacity-30 z-0 mix-blend-screen" />
+
       <style>{`
         #liquid-timeline .tl-title,
         #liquid-timeline .tl-step {
