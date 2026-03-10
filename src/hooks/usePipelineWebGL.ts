@@ -20,85 +20,75 @@ export function usePipelineWebGL() {
                 renderer.setSize(width, height, false);
             }
         };
-        resizeRendererToDisplaySize();
 
         const scene = new THREE.Scene();
         scene.fog = new THREE.FogExp2(0x000000, 0.015);
 
-        const camera = new THREE.PerspectiveCamera(40, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
+        const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 1000);
         camera.position.set(0, 0, 40);
 
         const particleCount = 400;
         const geometry = new THREE.BufferGeometry();
         const positions = new Float32Array(particleCount * 3);
+        const colors = new Float32Array(particleCount * 3);
         const speeds: number[] = [];
-        const opacities = new Float32Array(particleCount);
+
+        const colorEmerald = new THREE.Color('#4ade80');
+        const colorWhite = new THREE.Color('#ffffff');
 
         for (let i = 0; i < particleCount; i++) {
-            // Horizontal spread from -50 to 50
             positions[i * 3] = (Math.random() - 0.5) * 100;
-
-            // Vertical spread tightly clustered around center
             const yOffset = (Math.random() - 0.5);
             positions[i * 3 + 1] = yOffset * 15 * (Math.random() * 0.5 + 0.5);
-
-            // Z spread
             positions[i * 3 + 2] = (Math.random() - 0.5) * 30;
 
-            // Speed for horizontal flow
             speeds.push(0.1 + Math.random() * 0.4);
-            opacities[i] = Math.random();
+
+            const mixedColor = Math.random() > 0.5 ? colorEmerald : colorWhite;
+            colors[i * 3] = mixedColor.r;
+            colors[i * 3 + 1] = mixedColor.g;
+            colors[i * 3 + 2] = mixedColor.b;
         }
 
         geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        geometry.setAttribute('aOpacity', new THREE.BufferAttribute(opacities, 1));
+        geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
-        // Custom shader material to make particles glow softly with different opacities
-        const material = new THREE.ShaderMaterial({
-            uniforms: {
-                color1: { value: new THREE.Color('#ffffff') },
-                color2: { value: new THREE.Color('#4ade80') }
-            },
-            vertexShader: `
-                attribute float aOpacity;
-                varying float vOpacity;
-                void main() {
-                    vOpacity = aOpacity;
-                    vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-                    gl_PointSize = (20.0 / -mvPosition.z); // Scale by distance
-                    gl_Position = projectionMatrix * mvPosition;
-                }
-            `,
-            fragmentShader: `
-                uniform vec3 color1;
-                uniform vec3 color2;
-                varying float vOpacity;
-                void main() {
-                    vec2 coord = gl_PointCoord - vec2(0.5);
-                    // Soft circular particle
-                    float dist = length(coord);
-                    if(dist > 0.5) discard;
-                    
-                    float alpha = smoothstep(0.5, 0.2, dist) * vOpacity;
-                    
-                    // Mix between white and emerald randomly per particle (using vOpacity as seed)
-                    vec3 finalColor = mix(color1, color2, step(0.5, vOpacity));
-                    gl_FragColor = vec4(finalColor, alpha * 0.8);
-                }
-            `,
+        // Create a circular texture for particles programmatically
+        const createCircleTexture = () => {
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = 64;
+            tempCanvas.height = 64;
+            const context = tempCanvas.getContext('2d');
+            if (context) {
+                const gradient = context.createRadialGradient(32, 32, 0, 32, 32, 32);
+                gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+                gradient.addColorStop(0.2, 'rgba(255, 255, 255, 0.8)');
+                gradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.2)');
+                gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+                context.fillStyle = gradient;
+                context.fillRect(0, 0, 64, 64);
+            }
+            const texture = new THREE.CanvasTexture(tempCanvas);
+            return texture;
+        };
+
+        const material = new THREE.PointsMaterial({
+            size: 1.5,
+            vertexColors: true,
+            map: createCircleTexture(),
             transparent: true,
-            blending: THREE.AdditiveBlending,
-            depthWrite: false
+            opacity: 0.8,
+            depthWrite: false,
+            blending: THREE.AdditiveBlending
         });
 
         const particles = new THREE.Points(geometry, material);
         scene.add(particles);
 
-        // Add some subtle connecting lines trailing horizontally
         const lineMat = new THREE.LineBasicMaterial({
             color: 0xffffff,
             transparent: true,
-            opacity: 0.05,
+            opacity: 0.1,
             blending: THREE.AdditiveBlending
         });
 
@@ -117,10 +107,10 @@ export function usePipelineWebGL() {
             const geo = new THREE.BufferGeometry().setFromPoints(points);
             const line = new THREE.Line(geo, lineMat);
 
-            return { mesh: line, speed: 0.2 + Math.random() * 0.3, y, z };
+            return { mesh: line, speed: 0.3 + Math.random() * 0.4 };
         };
 
-        const trails = Array.from({ length: 15 }, () => createTrail(10 + Math.random() * 20));
+        const trails = Array.from({ length: 20 }, () => createTrail(15 + Math.random() * 30));
         trails.forEach(t => linesGroup.add(t.mesh));
 
         let animationId: number;
@@ -130,17 +120,17 @@ export function usePipelineWebGL() {
             animationId = requestAnimationFrame(animate);
 
             resizeRendererToDisplaySize();
-            camera.aspect = canvas.clientWidth / canvas.clientHeight;
-            camera.updateProjectionMatrix();
+            if (canvas.clientWidth > 0 && canvas.clientHeight > 0) {
+                camera.aspect = canvas.clientWidth / canvas.clientHeight;
+                camera.updateProjectionMatrix();
+            }
 
             time += 0.01;
 
-            // Move particles left to right
             const pPositions = particles.geometry.attributes.position.array as Float32Array;
             for (let i = 0; i < particleCount; i++) {
                 pPositions[i * 3] += speeds[i];
 
-                // Wrap around when passing the right edge
                 if (pPositions[i * 3] > 60) {
                     pPositions[i * 3] = -60;
                     pPositions[i * 3 + 1] = (Math.random() - 0.5) * 15;
@@ -148,15 +138,13 @@ export function usePipelineWebGL() {
             }
             particles.geometry.attributes.position.needsUpdate = true;
 
-            // Move trails
             trails.forEach(t => {
                 t.mesh.position.x += t.speed;
-                if (t.mesh.position.x > 110) { // reset when out of view
+                if (t.mesh.position.x > 110) {
                     t.mesh.position.x = -110;
                 }
             });
 
-            // Camera subtle wave to make it feel organic
             camera.position.y = Math.sin(time * 0.5) * 2;
             camera.position.x = Math.cos(time * 0.3) * 1;
             camera.lookAt(0, 0, 0);
