@@ -40,7 +40,7 @@ export function useGlobeWebGL() {
         const globeMat = new THREE.LineBasicMaterial({
             color: colorWhite,
             transparent: true,
-            opacity: 0.03,
+            opacity: 0.1, // Increased brightness
             blending: THREE.AdditiveBlending
         });
         const globeWireframe = new THREE.LineSegments(
@@ -96,7 +96,7 @@ export function useGlobeWebGL() {
             color: colorWhite,
             size: 0.2,
             transparent: true,
-            opacity: 0.6,
+            opacity: 0.8, // Increased brightness
             blending: THREE.AdditiveBlending
         });
         const activeNodes = new THREE.Points(activeNodeGeo, activeNodeMat);
@@ -119,7 +119,7 @@ export function useGlobeWebGL() {
             color: colorWhite,
             size: 0.1,
             transparent: true,
-            opacity: 0.15,
+            opacity: 0.4, // Increased brightness
             blending: THREE.AdditiveBlending
         });
         const allNodes = new THREE.Points(nodeGeo, allNodeMat);
@@ -158,7 +158,7 @@ export function useGlobeWebGL() {
                         const material = new THREE.LineBasicMaterial({
                             color: isHubConnection ? colorEmerald : colorWhite,
                             transparent: true,
-                            opacity: isHubConnection ? 0.3 : 0.05,
+                            opacity: isHubConnection ? 0.6 : 0.15, // Increased brightness
                             blending: THREE.AdditiveBlending
                         });
 
