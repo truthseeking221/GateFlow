@@ -25,13 +25,13 @@ export function useHeroWebGL() {
         scene.fog = new THREE.FogExp2(0x000000, 0.003);
 
         const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
-        camera.position.set(0, 0, 150);
+        camera.position.set(0, 0, 180);
 
         const group = new THREE.Group();
         scene.add(group);
 
         // 1. Core central starfield (Abstract Galaxy / Radial Network)
-        const particleCount = 1200;
+        const particleCount = 1500;
         const positions = new Float32Array(particleCount * 3);
         const colors = new Float32Array(particleCount * 3);
 
@@ -39,14 +39,14 @@ export function useHeroWebGL() {
         const colorWhite = new THREE.Color('#ffffff');
 
         for (let i = 0; i < particleCount; i++) {
-            // Distribute in a wide disk (galaxy shape)
-            const r = 5 + Math.pow(Math.random(), 2) * 140; // More density near center
+            // Distribute in a flat disk facing camera, matching Gateway SVG shape
+            const r = 5 + Math.pow(Math.random(), 2) * 160;
             const theta = Math.random() * Math.PI * 2;
-            const height = (Math.random() - 0.5) * 15 * (1 - r / 150); // Thinner at edges
+            const zDepth = (Math.random() - 0.5) * 40 * (1 - r / 160); // Plump at center, flat at edges
 
             positions[i * 3] = r * Math.cos(theta);
-            positions[i * 3 + 1] = height;
-            positions[i * 3 + 2] = r * Math.sin(theta);
+            positions[i * 3 + 1] = r * Math.sin(theta);
+            positions[i * 3 + 2] = zDepth;
 
             const c = Math.random() > 0.85 ? colorEmerald : colorWhite;
             colors[i * 3] = c.r;
@@ -75,11 +75,11 @@ export function useHeroWebGL() {
         };
 
         const material = new THREE.PointsMaterial({
-            size: 1.0,
+            size: 1.2,
             vertexColors: true,
             map: createCircleTexture(),
             transparent: true,
-            opacity: 0.5,
+            opacity: 0.6,
             depthWrite: false,
             blending: THREE.AdditiveBlending
         });
@@ -93,30 +93,25 @@ export function useHeroWebGL() {
         const arcMat = new THREE.LineBasicMaterial({
             color: colorWhite,
             transparent: true,
-            opacity: 0.04,
+            opacity: 0.05,
             blending: THREE.AdditiveBlending
         });
         const arcMatEmerald = new THREE.LineBasicMaterial({
             color: colorEmerald,
             transparent: true,
-            opacity: 0.1,
+            opacity: 0.15,
             blending: THREE.AdditiveBlending
         });
 
-        for (let i = 0; i < 10; i++) {
-            const r = 20 + i * 12;
+        for (let i = 0; i < 15; i++) {
+            const r = 20 + i * 10;
             const curve = new THREE.EllipseCurve(0, 0, r, r, 0, Math.PI * (0.3 + Math.random() * 1.5), false, 0);
             const pts = curve.getPoints(50);
             const geo = new THREE.BufferGeometry().setFromPoints(pts);
             const arc = new THREE.Line(geo, Math.random() > 0.7 ? arcMatEmerald : arcMat);
-            arc.rotation.x = Math.PI / 2;
             arc.rotation.z = Math.random() * Math.PI * 2;
             arcGroup.add(arc);
         }
-
-        // Tilt the whole structure slightly to make it 3D, and shift to the right to frame the text nicely
-        group.rotation.x = 0.5;
-        group.position.x = 20;
 
         let animationId: number;
         let time = 0;
@@ -128,22 +123,39 @@ export function useHeroWebGL() {
             if (canvas.clientWidth > 0 && canvas.clientHeight > 0) {
                 camera.aspect = canvas.clientWidth / canvas.clientHeight;
                 camera.updateProjectionMatrix();
+
+                // Dynamically shift the group to align with the right-side Gateway
+                const isDesktop = canvas.clientWidth >= 1024;
+
+                // Calculate physical width visible at z=0
+                const vFov = (camera.fov * Math.PI) / 180;
+                const visibleHeight = 2 * Math.tan(vFov / 2) * camera.position.z;
+                const visibleWidth = visibleHeight * camera.aspect;
+
+                // Target right-center for desktop, bottom-center for mobile depending on layout
+                // In HeroSection layout: lg:grid-cols-2. The right col is roughly at x = visibleWidth * 0.25
+                const targetX = isDesktop ? visibleWidth * 0.23 : 0;
+                const targetY = isDesktop ? 0 : -visibleHeight * 0.2; // Move down on mobile if stacked
+
+                group.position.x += (targetX - group.position.x) * 0.05;
+                group.position.y += (targetY - group.position.y) * 0.05;
             }
 
             time += 0.005;
 
-            // Faint, slow rotation
-            group.rotation.y = time * 0.1;
-            arcGroup.rotation.z = -time * 0.05; // Counter rotation for arcs
+            // Faint, slow rotation around Z axis (like a wheel)
+            group.rotation.z = -time * 0.05;
+            arcGroup.rotation.z = time * 0.1; // Counter rotation for arcs
 
             const positionsArray = particles.geometry.attributes.position.array as Float32Array;
             for (let i = 0; i < particleCount; i++) {
-                // Gently move particles up and down
-                positionsArray[i * 3 + 1] += Math.sin(time * 2 + i) * 0.01;
+                // Gently move particles inward/outward
+                const idx = i * 3 + 2; // z depth
+                positionsArray[idx] += Math.sin(time * 2 + i) * 0.02;
             }
             particles.geometry.attributes.position.needsUpdate = true;
 
-            // Subtle camera drifting
+            // Subtle camera drifting to give depth
             camera.position.x = Math.cos(time * 0.2) * 2;
             camera.position.y = Math.sin(time * 0.3) * 2;
             camera.lookAt(0, 0, 0);
