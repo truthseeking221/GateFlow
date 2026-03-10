@@ -20,119 +20,159 @@ export function useCTAWebGL() {
                 renderer.setSize(width, height, false);
             }
         };
-        resizeRendererToDisplaySize();
 
         const scene = new THREE.Scene();
-        scene.fog = new THREE.FogExp2(0x000000, 0.005); // Deeper fog to cover the horizon
+        scene.fog = new THREE.FogExp2(0x000000, 0.008);
 
-        const camera = new THREE.PerspectiveCamera(60, canvas.clientWidth / canvas.clientHeight, 0.1, 500);
-        camera.position.set(0, 5, 0); // Position slightly above the grid
-        camera.lookAt(0, 5, -100);
+        const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
+        camera.position.set(0, 0, 0);
 
         const colorEmerald = new THREE.Color('#4ade80');
         const colorWhite = new THREE.Color('#ffffff');
 
-        // Infinite Grid moving towards camera (Warp Speed / Digital Landscape feel)
-        const gridGeo = new THREE.PlaneGeometry(200, 1000, 40, 200);
+        const portalGroup = new THREE.Group();
+        scene.add(portalGroup);
+        portalGroup.position.z = -80; // Push back into the scene
+        portalGroup.rotation.x = Math.PI * 0.05; // Slightly tilt towards camera
 
-        // Displace the grid z-positions to make it look like a landscape or wave
-        const posAttr = gridGeo.attributes.position;
-        for (let i = 0; i < posAttr.count; i++) {
-            const x = posAttr.getX(i);
-            const y = posAttr.getY(i);
-            // Add some gentle sine wave hills to the grid
-            const z = Math.sin(x * 0.1) * 3 + Math.cos(y * 0.05) * 5;
-            posAttr.setZ(i, z);
+        // --- 1. The Gate Rings (Concentric Particle Rings) ---
+        const ringCount = 12;
+        const rings: { mesh: THREE.Points, speed: number }[] = [];
+
+        for (let i = 0; i < ringCount; i++) {
+            const particlesPerRing = 300 + i * 100;
+            const geo = new THREE.BufferGeometry();
+            const pos = new Float32Array(particlesPerRing * 3);
+            const radius = 8 + i * 4.5;
+            const colors = new Float32Array(particlesPerRing * 3);
+
+            for (let j = 0; j < particlesPerRing; j++) {
+                const theta = (j / particlesPerRing) * Math.PI * 2;
+                const r = radius + (Math.random() - 0.5) * 3;
+                const z = (Math.random() - 0.5) * 5 - (i * 2); // Deeper as it gets wider
+
+                pos[j * 3] = Math.cos(theta) * r;
+                pos[j * 3 + 1] = Math.sin(theta) * r;
+                pos[j * 3 + 2] = z;
+
+                // Inner rings are greener, outer rings fade to white
+                const mixRatio = Math.max(0, 1 - (i / ringCount));
+                const mixedColor = new THREE.Color().lerpColors(colorWhite, colorEmerald, mixRatio);
+
+                // Add some random variation
+                if (Math.random() > 0.8) {
+                    mixedColor.setHex(0xffffff);
+                }
+
+                colors[j * 3] = mixedColor.r;
+                colors[j * 3 + 1] = mixedColor.g;
+                colors[j * 3 + 2] = mixedColor.b;
+            }
+
+            geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+            geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+            const makeCircleTexture = () => {
+                const c = document.createElement('canvas');
+                c.width = 32; c.height = 32;
+                const ctx = c.getContext('2d');
+                if (ctx) {
+                    const grad = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
+                    grad.addColorStop(0, 'rgba(255,255,255,1)');
+                    grad.addColorStop(1, 'rgba(0,0,0,0)');
+                    ctx.fillStyle = grad;
+                    ctx.fillRect(0, 0, 32, 32);
+                }
+                return new THREE.CanvasTexture(c);
+            };
+
+            const mat = new THREE.PointsMaterial({
+                size: 0.6 + Math.random() * 0.5,
+                vertexColors: true,
+                map: makeCircleTexture(),
+                transparent: true,
+                opacity: 0.8 - (i * 0.05), // fade out
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+
+            const ring = new THREE.Points(geo, mat);
+            // Alternate rotation directions
+            const speed = (i % 2 === 0 ? 1 : -1) * (0.001 + Math.random() * 0.002);
+            rings.push({ mesh: ring, speed });
+            portalGroup.add(ring);
         }
-        gridGeo.computeVertexNormals();
 
-        // Tăng opacity của lưới lên một chút để tạo cảm giác dày & rõ rệt hơn
-        const gridMat = new THREE.MeshBasicMaterial({
-            color: colorWhite,
-            wireframe: true,
-            transparent: true,
-            opacity: 0.03 // much fainter
-        });
+        // --- 2. Data Beams (Warp streaks pulling towards center) ---
+        const beamCount = 100;
+        const beamGroup = new THREE.Group();
+        portalGroup.add(beamGroup);
 
-        // We need an array of grids to seamlessly loop
-        const gridGroup = new THREE.Group();
-        gridGroup.rotation.x = -Math.PI / 2; // Lay flat
-        scene.add(gridGroup);
-
-        const grid1 = new THREE.Mesh(gridGeo, gridMat);
-        grid1.position.z = -500;
-        gridGroup.add(grid1);
-
-        const grid2 = new THREE.Mesh(gridGeo, gridMat);
-        grid2.position.z = 500;
-        gridGroup.add(grid2);
-
-        // Warp lines (Light speed streaks)
-        // Để làm các đường line dày dặn hơn (thay vì phụ thuộc vào WebGL render 1px line render),
-        // mình sử dụng hình trụ (Cylinder) trải dài để nó có ĐỘ DÀY thực sự trong không gian 3D.
-        const streaksCount = 120;
-        const streaksGroup = new THREE.Group();
-        scene.add(streaksGroup);
-
-        const streakGeo = new THREE.CylinderGeometry(0.02, 0.02, 1, 4); // Thinner line
-        streakGeo.rotateX(Math.PI / 2); // align along Z axis
-        const streakMat = new THREE.MeshBasicMaterial({
+        const beamGeo = new THREE.CylinderGeometry(0.02, 0.05, 1, 4);
+        beamGeo.rotateX(Math.PI / 2);
+        const beamMat = new THREE.MeshBasicMaterial({
             color: colorEmerald,
             transparent: true,
-            opacity: 0.6,
+            opacity: 0.15,
             blending: THREE.AdditiveBlending
         });
 
-        const streaksData: { mesh: THREE.Mesh, speed: number }[] = [];
+        const beams: { mesh: THREE.Mesh, speed: number, radius: number, theta: number }[] = [];
 
-        for (let i = 0; i < streaksCount; i++) {
-            const mesh = new THREE.Mesh(streakGeo, streakMat);
+        for (let i = 0; i < beamCount; i++) {
+            const mesh = new THREE.Mesh(beamGeo, beamMat);
+            const radius = 10 + Math.random() * 50;
+            const theta = Math.random() * Math.PI * 2;
+            const zLength = 10 + Math.random() * 30;
+            const z = Math.random() * 100; // Start in front of the portal
 
-            const x = (Math.random() - 0.5) * 100;
-            const y = (Math.random() * 40) + 2; // Above the grid
-            const z = -400 - Math.random() * 400; // Far away
-            const length = 15 + Math.random() * 30; // Length of streak
+            mesh.scale.set(1, 1, zLength);
+            mesh.position.set(Math.cos(theta) * radius, Math.sin(theta) * radius, z);
 
-            mesh.position.set(x, y, z);
-            mesh.scale.set(1, 1, length);
-
-            streaksGroup.add(mesh);
-            streaksData.push({ mesh, speed: 2 + Math.random() * 4 });
+            beamGroup.add(mesh);
+            beams.push({ mesh, speed: 0.5 + Math.random() * 1.5, radius, theta });
         }
 
+
         let animationId: number;
+        let time = 0;
 
         const animate = () => {
             animationId = requestAnimationFrame(animate);
 
             resizeRendererToDisplaySize();
-            camera.aspect = canvas.clientWidth / canvas.clientHeight;
-            camera.updateProjectionMatrix();
-
-            // Move the grid towards the camera
-            const speed = 1.0;
-            gridGroup.position.z += speed;
-
-            // Loop the grid seamlessly
-            if (gridGroup.position.z > 500) {
-                gridGroup.position.z = 0;
+            if (canvas.clientWidth > 0 && canvas.clientHeight > 0) {
+                camera.aspect = canvas.clientWidth / canvas.clientHeight;
+                camera.updateProjectionMatrix();
             }
 
-            // Animate streaks rushing past
-            for (let i = 0; i < streaksCount; i++) {
-                const data = streaksData[i];
-                data.mesh.position.z += data.speed * 1.5; // less frantic
+            time += 0.01;
 
-                if (data.mesh.position.z > 50) { // Passed the camera
-                    data.mesh.position.z = -400 - Math.random() * 200;
-                    data.mesh.position.x = (Math.random() - 0.5) * 100;
-                    data.mesh.position.y = (Math.random() * 40) + 2;
+            // Rotate concentric rings slowly
+            rings.forEach(r => {
+                r.mesh.rotation.z += r.speed;
+            });
+
+            // Pulse the portal group slightly
+            portalGroup.scale.setScalar(1 + Math.sin(time * 0.5) * 0.02);
+
+            // Animate data beams pulling into the portal (moving away from camera in Z)
+            beams.forEach(b => {
+                b.mesh.position.z -= b.speed;
+                if (b.mesh.position.z < -20) {
+                    // Reset to front
+                    b.mesh.position.z = 100 + Math.random() * 50;
+                    b.radius = 10 + Math.random() * 50;
+                    b.theta = Math.random() * Math.PI * 2;
+                    b.mesh.position.x = Math.cos(b.theta) * b.radius;
+                    b.mesh.position.y = Math.sin(b.theta) * b.radius;
                 }
-            }
+            });
 
-            // Optional subtle camera sway for dynamics
-            const time = performance.now() * 0.001;
-            camera.rotation.z = Math.sin(time * 0.3) * 0.01;
+            // Gentle camera float
+            camera.position.x = Math.sin(time * 0.2) * 2;
+            camera.position.y = Math.cos(time * 0.15) * 2;
+            camera.lookAt(0, 0, -80);
 
             renderer.render(scene, camera);
         };
@@ -143,10 +183,12 @@ export function useCTAWebGL() {
             cancelAnimationFrame(animationId);
             scene.clear();
             renderer.dispose();
-            gridGeo.dispose();
-            gridMat.dispose();
-            streakGeo.dispose();
-            streakMat.dispose();
+            rings.forEach(r => {
+                r.mesh.geometry.dispose();
+                (r.mesh.material as THREE.Material).dispose();
+            });
+            beamGeo.dispose();
+            beamMat.dispose();
         };
     }, []);
 

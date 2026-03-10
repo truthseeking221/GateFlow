@@ -5,8 +5,8 @@ export default function CTASection() {
   const canvasRef = useCTAWebGL();
 
   return (
-    <section className="flex flex-col text-center min-h-[50vh] px-6 relative items-center justify-center pt-32 pb-32 bg-black font-sans border-b border-white/10 overflow-hidden">
-      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none opacity-40 z-0 mix-blend-screen" />
+    <section className="flex flex-col text-center min-h-[50vh] px-6 relative items-center justify-center pt-32 pb-32 bg-black font-sans border-b border-white/10 overflow-hidden w-full">
+      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none opacity-80 z-0 mix-blend-screen" />
 
       <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/[0.02] border border-white/[0.08] rounded-full mb-6 relative font-sans text-[11px] text-[#4ade80] uppercase tracking-widest font-medium z-10">
         <span className="w-1.5 h-1.5 bg-[#4ade80] rounded-full" />
