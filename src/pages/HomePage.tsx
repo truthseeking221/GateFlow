@@ -1,4 +1,3 @@
-import { useWebGLBackground } from '../hooks/useWebGLBackground';
 import Header from '../components/Header';
 import HeroSection from '../components/HeroSection';
 import ModelsCatalog from '../components/ModelsCatalog';
@@ -15,15 +14,8 @@ import Footer from '../components/Footer';
 import ScrollReveal from '../components/ScrollReveal';
 
 export default function HomePage() {
-    const canvasRef = useWebGLBackground();
-
     return (
-        <>
-            <canvas
-                ref={canvasRef}
-                className="fixed top-0 left-0 w-screen h-screen -z-10 pointer-events-none"
-            />
-
+        <div className="bg-black min-h-screen">
             <Header />
             <HeroSection />
 
@@ -40,6 +32,6 @@ export default function HomePage() {
                 <ScrollReveal><CTASection /></ScrollReveal>
             </main>
             <ScrollReveal><Footer /></ScrollReveal>
-        </>
+        </div>
     );
 }

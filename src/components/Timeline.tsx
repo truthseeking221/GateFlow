@@ -1,9 +1,9 @@
 import { useEffect, useRef } from 'react';
 
 const phases = [
-  { num: '01', title: 'CONNECT', desc: 'CHANGE ONE LINE: YOUR BASEURL. ZERO OTHER CODE CHANGES.' },
-  { num: '02', title: 'ROUTE', desc: 'WE AUTO-ROUTE TO THE FASTEST, CHEAPEST MODEL INSTANTLY.' },
-  { num: '03', title: 'SCALE', desc: 'HANDLE MILLIONS OF REQUESTS. NEVER HIT A RATE LIMIT AGAIN.' },
+  { num: '01', title: 'Connect Endpoint', desc: 'Change your baseURL to point to the GateFlow API. Zero other code changes needed. Drop-in compatible.' },
+  { num: '02', title: 'Intelligent Routing', desc: 'We automatically route your incoming queries to the fastest, cheapest, or highest-quality model instance.' },
+  { num: '03', title: 'Infinite Scale', desc: 'Handle millions of requests. With automatic failover between 100+ providers, you will never hit a rate limit.' },
 ];
 
 export default function Timeline() {
@@ -41,7 +41,7 @@ export default function Timeline() {
     <section
       ref={sectionRef}
       id="liquid-timeline"
-      className="overflow-hidden pt-24 pb-24 relative bg-black font-sans border-b border-gray-800"
+      className="overflow-hidden pt-24 pb-24 relative bg-black font-sans border-b border-white/10"
     >
       <style>{`
         #liquid-timeline .tl-title,
@@ -56,24 +56,25 @@ export default function Timeline() {
 
       {/* Title */}
       <div className="max-w-7xl mx-auto px-6 relative z-20 text-center mb-16 tl-title flex flex-col items-center">
-        <div className="inline-flex items-center gap-2 px-3 py-1 bg-gray-900 border border-gray-800 text-[11px] font-mono tracking-[0.2em] uppercase text-gray-400 mb-6 rounded-none">
-          [ DEPLOYMENT ]
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/[0.02] border border-white/[0.08] rounded-full mb-6 relative font-sans text-[11px] text-[#4ade80] uppercase tracking-widest font-medium">
+          <span className="w-1.5 h-1.5 bg-[#4ade80] rounded-full" />
+          Deployment
         </div>
-        <h2 className="text-4xl md:text-5xl font-black text-white tracking-tighter mb-6 uppercase">
-          LIVE IN <span className="text-cyan-500">SECONDS.</span>
+        <h2 className="text-4xl md:text-5xl font-sans font-bold text-white tracking-tighter mb-4">
+          Live in seconds.
         </h2>
-        <p className="text-lg text-gray-500 font-mono max-w-2xl mx-auto">
-          No complicated SDKs. Just swap your endpoint.
+        <p className="text-lg text-white/50 font-sans max-w-2xl mx-auto font-medium">
+          No complicated SDKs. Just swap your endpoint and we handle the rest.
         </p>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 relative z-10 grid grid-cols-1 md:grid-cols-3 gap-px bg-gray-800 border border-gray-800">
-        {phases.map((p) => (
+      <div className="max-w-7xl mx-auto px-6 relative z-10 grid grid-cols-1 md:grid-cols-3 gap-0">
+        {phases.map((p, i) => (
           <div key={p.num} className="tl-step group relative w-full h-full">
-            <div className="bg-black border border-gray-800 p-8 h-full rounded-none flex flex-col items-start hover:bg-gray-900 transition-colors font-mono">
-              <div className="text-[14px] font-bold text-cyan-500 mb-6 border border-cyan-500/30 bg-cyan-500/10 px-2 py-0.5">[{p.num}]</div>
-              <h3 className="text-2xl font-bold text-white mb-3 uppercase tracking-widest">{p.title}</h3>
-              <p className="text-gray-400 text-[11px] leading-relaxed uppercase">{p.desc}</p>
+            <div className={`bg-black border-t border-white/10 p-8 md:p-12 h-full flex flex-col items-start font-sans ${i !== 0 ? 'md:border-l' : ''}`}>
+              <div className="text-[10px] uppercase font-bold text-white/40 tracking-[0.2em] mb-6">Step {p.num}</div>
+              <h3 className="text-xl font-bold text-white mb-3 tracking-tight">{p.title}</h3>
+              <p className="text-white/50 text-sm leading-relaxed font-medium">{p.desc}</p>
             </div>
           </div>
         ))}

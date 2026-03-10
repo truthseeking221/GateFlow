@@ -1,30 +1,28 @@
-import { useCTAWebGL } from '../hooks/useCTAWebGL';
+import { ArrowRight } from 'lucide-react';
 
 export default function CTASection() {
-  const canvasRef = useCTAWebGL();
-
   return (
-    <section className="flex flex-col text-center min-h-[50vh] px-6 relative items-center justify-center pt-32 pb-32 bg-black font-sans border-b border-gray-800 overflow-hidden">
-      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none opacity-30 z-0 mix-blend-screen" />
-
-      <div className="inline-flex items-center gap-2 px-3 py-1 bg-gray-900 border border-gray-800 text-[11px] font-mono tracking-[0.2em] uppercase text-gray-400 mb-8 rounded-none relative z-10">
-        [ FINAL STEP ]
+    <section className="flex flex-col text-center min-h-[50vh] px-6 relative items-center justify-center pt-32 pb-32 bg-black font-sans border-b border-white/10 overflow-hidden">
+      <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/[0.02] border border-white/[0.08] rounded-full mb-6 relative font-sans text-[11px] text-[#4ade80] uppercase tracking-widest font-medium z-10">
+        <span className="w-1.5 h-1.5 bg-[#4ade80] rounded-full" />
+        Final Step
       </div>
-      <h2 className="text-5xl md:text-7xl font-black text-white tracking-tighter mb-8 relative z-10 uppercase">
-        SHIP <span className="text-cyan-500">FASTER.</span>
+      <h2 className="text-5xl md:text-7xl font-sans font-bold text-white tracking-tighter mb-8 relative z-10">
+        Ship Faster.
       </h2>
-      <p className="text-xl text-gray-400 mb-12 max-w-lg mx-auto relative z-10 font-mono">
+      <p className="text-xl text-white/50 mb-12 max-w-lg mx-auto relative z-10 font-sans font-medium">
         Join 10,000+ developers shipping AI apps with GateFlow. Free forever for individuals.
       </p>
-      <div className="flex flex-wrap justify-center gap-4 relative z-10 font-mono">
-        <button className="px-8 py-4 bg-white hover:bg-cyan-500 text-black hover:text-black font-bold uppercase tracking-widest text-[13px] rounded-none transition-colors border-2 border-white hover:border-cyan-500">
-          &gt; GET STARTED FREE
+      <div className="flex flex-col sm:flex-row items-center justify-center gap-4 relative z-10 w-full sm:w-auto">
+        <button className="w-full sm:w-auto px-8 py-3.5 bg-white text-black font-semibold text-sm rounded-md transition-all hover:bg-neutral-200 border border-transparent flex items-center justify-center gap-2 group">
+          Get Started
+          <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
         </button>
         <a
           href="#docs"
-          className="px-8 py-4 font-bold text-[13px] uppercase tracking-widest text-white border-2 border-gray-600 hover:border-white hover:text-white bg-black/50 backdrop-blur-sm rounded-none transition-colors flex items-center"
+          className="w-full sm:w-auto px-8 py-3.5 font-semibold text-sm text-white border border-white/20 hover:bg-white/[0.05] rounded-md transition-colors flex items-center justify-center"
         >
-          [ READ DOCS ]
+          Read Docs
         </a>
       </div>
     </section>

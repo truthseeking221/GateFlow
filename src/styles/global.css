@@ -2,11 +2,11 @@
 
 @theme {
   --color-primary: #ffffff;
-  --color-text-muted: #888888;
-  --color-btn-bg: #ffffff;
-  --color-btn-border: #ffffff;
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --color-text-muted: rgba(255, 255, 255, 0.6);
+  --color-btn-bg: #000000;
+  --color-btn-border: rgba(255, 255, 255, 0.1);
+  --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'Geist Mono', monospace;
 }
 
 @layer base {
