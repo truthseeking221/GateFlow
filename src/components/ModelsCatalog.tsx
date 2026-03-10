@@ -1,4 +1,5 @@
 import { useRevealOnScroll } from '../hooks/useRevealOnScroll';
+import { useModelsWebGL } from '../hooks/useModelsWebGL';
 import { Sparkles, Zap } from 'lucide-react';
 
 const frontierModels = [
@@ -17,9 +18,12 @@ const speedModels = [
 
 export default function ModelsCatalog() {
   const sectionRef = useRevealOnScroll<HTMLElement>();
+  const canvasRef = useModelsWebGL();
 
   return (
-    <section id="models" ref={sectionRef} className="max-w-7xl mx-auto pt-24 px-6 pb-24 relative bg-black font-sans border-b border-white/10">
+    <section id="models" ref={sectionRef} className="max-w-7xl mx-auto pt-24 px-6 pb-24 relative bg-black font-sans border-b border-white/10 overflow-hidden">
+      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none opacity-60 z-0 mix-blend-screen" />
+
       <div className="mb-16 flex flex-col items-start border-b border-white/10 pb-12 relative z-10">
         <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/[0.02] border border-white/[0.08] rounded-full mb-6 relative font-sans text-[11px] text-[#4ade80] uppercase tracking-widest font-medium">
           <span className="w-1.5 h-1.5 bg-[#4ade80] rounded-full" />

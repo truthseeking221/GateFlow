@@ -28,20 +28,20 @@ export function useModelsWebGL() {
         const camera = new THREE.PerspectiveCamera(60, canvas.clientWidth / canvas.clientHeight, 0.1, 200);
         camera.position.set(0, 5, 40);
 
-        const colorCyan = new THREE.Color('#06b6d4');
-        const colorGray = new THREE.Color('#374151');
+        const colorEmerald = new THREE.Color('#4ade80');
+        const colorSubtleWhite = new THREE.Color('#ffffff');
 
         const networkGroup = new THREE.Group();
         scene.add(networkGroup);
 
         // Core glow (very subtle now)
         const glowGeo = new THREE.SphereGeometry(1.5, 32, 32);
-        const glowMat = new THREE.MeshBasicMaterial({ color: colorCyan, transparent: true, opacity: 0.1, blending: THREE.AdditiveBlending });
+        const glowMat = new THREE.MeshBasicMaterial({ color: colorEmerald, transparent: true, opacity: 0.05, blending: THREE.AdditiveBlending });
         const glowNode = new THREE.Mesh(glowGeo, glowMat);
         networkGroup.add(glowNode);
 
         // Outer "Model" Nodes
-        const nodeCount = 200;
+        const nodeCount = 150; // slightly sparser
         const outerNodesGeo = new THREE.BufferGeometry();
         const outerNodesPos = new Float32Array(nodeCount * 3);
         const nodeData: { x: number, y: number, z: number, phaseX: number, phaseY: number, phaseZ: number, radius: number }[] = [];
@@ -50,7 +50,7 @@ export function useModelsWebGL() {
             const phi = Math.acos(-1 + (2 * i) / nodeCount);
             const theta = Math.sqrt(nodeCount * Math.PI) * phi;
 
-            const radius = 15 + Math.random() * 25;
+            const radius = 15 + Math.random() * 30;
 
             const x = radius * Math.cos(theta) * Math.sin(phi);
             const y = radius * Math.sin(theta) * Math.sin(phi);
@@ -71,10 +71,10 @@ export function useModelsWebGL() {
 
         outerNodesGeo.setAttribute('position', new THREE.BufferAttribute(outerNodesPos, 3));
         const outerNodesMat = new THREE.PointsMaterial({
-            color: colorCyan,
-            size: 0.08, // Extremely small
+            color: colorSubtleWhite,
+            size: 0.05, // Extremely small 
             transparent: true,
-            opacity: 0.4,
+            opacity: 0.3,
             blending: THREE.AdditiveBlending
         });
         const outerParticles = new THREE.Points(outerNodesGeo, outerNodesMat);
@@ -94,16 +94,16 @@ export function useModelsWebGL() {
         linesGeo.setAttribute('position', new THREE.BufferAttribute(linesPos, 3));
 
         const linesMat = new THREE.LineBasicMaterial({
-            color: colorGray,
+            color: colorSubtleWhite,
             transparent: true,
-            opacity: 0.08,
+            opacity: 0.03, // much more transparent for minimal look
             blending: THREE.AdditiveBlending
         });
         const connectionLines = new THREE.LineSegments(linesGeo, linesMat);
         networkGroup.add(connectionLines);
 
         // Tiny floating data packets traversing the lines slowly
-        const streamCount = 80;
+        const streamCount = 60;
         const streamsGeo = new THREE.BufferGeometry();
         const streamsPos = new Float32Array(streamCount * 3);
         const streamData: { targetNode: number, progress: number, speed: number, returning: boolean }[] = [];
@@ -122,10 +122,10 @@ export function useModelsWebGL() {
 
         streamsGeo.setAttribute('position', new THREE.BufferAttribute(streamsPos, 3));
         const streamsMat = new THREE.PointsMaterial({
-            color: colorCyan,
-            size: 0.06, // Tiny
+            color: colorEmerald,
+            size: 0.05, // Tiny
             transparent: true,
-            opacity: 0.8,
+            opacity: 0.6,
             blending: THREE.AdditiveBlending
         });
         const streamsParticles = new THREE.Points(streamsGeo, streamsMat);
@@ -144,8 +144,8 @@ export function useModelsWebGL() {
             const time = clock.getElapsedTime();
 
             // Slower network rotation
-            networkGroup.rotation.y = time * 0.02;
-            networkGroup.rotation.z = time * 0.01;
+            networkGroup.rotation.y = time * 0.01;
+            networkGroup.rotation.z = time * 0.005;
 
             const positions = outerParticles.geometry.attributes.position.array;
             const linePositions = connectionLines.geometry.attributes.position.array;
@@ -155,9 +155,9 @@ export function useModelsWebGL() {
                 const data = nodeData[i];
 
                 // Slow sine/cosine drifting on all axes
-                const nx = data.x + Math.sin(time * 0.2 + data.phaseX) * 2;
-                const ny = data.y + Math.cos(time * 0.25 + data.phaseY) * 2;
-                const nz = data.z + Math.sin(time * 0.3 + data.phaseZ) * 2;
+                const nx = data.x + Math.sin(time * 0.15 + data.phaseX) * 1.5;
+                const ny = data.y + Math.cos(time * 0.2 + data.phaseY) * 1.5;
+                const nz = data.z + Math.sin(time * 0.25 + data.phaseZ) * 1.5;
 
                 positions[i * 3] = nx;
                 positions[i * 3 + 1] = ny;
@@ -195,8 +195,8 @@ export function useModelsWebGL() {
             streamsParticles.geometry.attributes.position.needsUpdate = true;
 
             // Subtle camera drifting
-            camera.position.x = Math.sin(time * 0.1) * 2;
-            camera.position.y = 5 + Math.cos(time * 0.15) * 1;
+            camera.position.x = Math.sin(time * 0.05) * 2;
+            camera.position.y = 5 + Math.cos(time * 0.05) * 1;
             camera.lookAt(0, 5, 0);
 
             renderer.render(scene, camera);

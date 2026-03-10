@@ -30,13 +30,14 @@ export function useOrbitalWebGL() {
         camera.position.set(0, 4, 16);
         camera.lookAt(0, 0, 0);
 
-        const colorCyan = new THREE.Color('#06b6d4');
+        const colorEmerald = new THREE.Color('#4ade80');
+        const colorWhite = new THREE.Color('#ffffff');
 
         // 1. Central "Data Core" (High poly spherical wireframe)
         const coreGeometry = new THREE.IcosahedronGeometry(2.5, 3);
         const coreWireframe = new THREE.LineSegments(
             new THREE.WireframeGeometry(coreGeometry),
-            new THREE.LineBasicMaterial({ color: colorCyan, transparent: true, opacity: 0.15, blending: THREE.AdditiveBlending })
+            new THREE.LineBasicMaterial({ color: colorWhite, transparent: true, opacity: 0.05, blending: THREE.AdditiveBlending })
         );
         scene.add(coreWireframe);
 
@@ -49,10 +50,10 @@ export function useOrbitalWebGL() {
 
         // Core glow points at vertices
         const pointsMat = new THREE.PointsMaterial({
-            color: colorCyan,
-            size: 0.06,
+            color: colorEmerald,
+            size: 0.04,
             transparent: true,
-            opacity: 0.8,
+            opacity: 0.4,
             blending: THREE.AdditiveBlending
         });
         const corePoints = new THREE.Points(coreGeometry, pointsMat);
@@ -67,13 +68,13 @@ export function useOrbitalWebGL() {
 
         for (let i = 0; i < ringCount; i++) {
             const radius = ringRadiuses[i];
-            const ringGeo = new THREE.TorusGeometry(radius, 0.015, 8, 128);
+            const ringGeo = new THREE.TorusGeometry(radius, 0.01, 8, 128); // thinner
             const isMain = i === 1 || i === 3;
 
             const ringMat = new THREE.MeshBasicMaterial({
-                color: isMain ? colorCyan : 0x334155,
+                color: colorWhite,
                 transparent: true,
-                opacity: isMain ? 0.3 : 0.15,
+                opacity: isMain ? 0.08 : 0.03, // much more subtle
                 blending: THREE.AdditiveBlending
             });
             const ringMesh = new THREE.Mesh(ringGeo, ringMat);
@@ -83,31 +84,31 @@ export function useOrbitalWebGL() {
             ringMesh.rotation.y = (Math.random() - 0.5) * Math.PI * 0.9;
 
             ringMesh.userData = {
-                rx: (Math.random() - 0.5) * 0.001,
-                ry: (Math.random() - 0.5) * 0.001,
-                rz: (Math.random() - 0.5) * 0.002,
+                rx: (Math.random() - 0.5) * 0.0005, // slower
+                ry: (Math.random() - 0.5) * 0.0005,
+                rz: (Math.random() - 0.5) * 0.001,
             };
 
             ringsGroup.add(ringMesh);
 
             // Create a trail/dust effect on the ring using BufferGeometry
             const dustGeo = new THREE.BufferGeometry();
-            const dustCount = 400; // lots of small particles forming the ring
+            const dustCount = 300; // fewer particles
             const pos = new Float32Array(dustCount * 3);
             for (let d = 0; d < dustCount; d++) {
                 const t = Math.random() * Math.PI * 2;
                 // Add tiny random spread to radius and y-axis to make it look like space dust
-                const rOffset = radius + (Math.random() - 0.5) * 0.3;
+                const rOffset = radius + (Math.random() - 0.5) * 0.2; // tighter spread
                 pos[d * 3] = Math.cos(t) * rOffset;
-                pos[d * 3 + 1] = (Math.random() - 0.5) * 0.15;
+                pos[d * 3 + 1] = (Math.random() - 0.5) * 0.1;
                 pos[d * 3 + 2] = Math.sin(t) * rOffset;
             }
             dustGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
             const dustMat = new THREE.PointsMaterial({
-                color: isMain ? colorCyan : 0x64748b,
-                size: 0.04,
+                color: isMain ? colorEmerald : colorWhite,
+                size: 0.03,
                 transparent: true,
-                opacity: isMain ? 0.6 : 0.2,
+                opacity: isMain ? 0.4 : 0.1,
                 blending: THREE.AdditiveBlending
             });
             const dustMesh = new THREE.Points(dustGeo, dustMat);
@@ -125,15 +126,15 @@ export function useOrbitalWebGL() {
 
             const time = performance.now() * 0.001;
 
-            // Smooth core rotations
-            coreWireframe.rotation.y = time * 0.15;
-            coreWireframe.rotation.x = time * 0.08;
-            corePoints.rotation.y = time * 0.15;
-            corePoints.rotation.x = time * 0.08;
-            solidCore.rotation.y = time * 0.15;
+            // Smooth core rotations (slower)
+            coreWireframe.rotation.y = time * 0.08;
+            coreWireframe.rotation.x = time * 0.04;
+            corePoints.rotation.y = time * 0.08;
+            corePoints.rotation.x = time * 0.04;
+            solidCore.rotation.y = time * 0.08;
 
             // Subtle pulse effect using scale on the particle core
-            const pulse = 1 + Math.sin(time * 3) * 0.015;
+            const pulse = 1 + Math.sin(time * 2) * 0.01;
             corePoints.scale.set(pulse, pulse, pulse);
 
             // Ring rotation
@@ -144,8 +145,8 @@ export function useOrbitalWebGL() {
             });
 
             // Camera subtle floating to give weightless space feel
-            camera.position.x = Math.sin(time * 0.2) * 1.5;
-            camera.position.y = 4 + Math.sin(time * 0.3) * 0.5;
+            camera.position.x = Math.sin(time * 0.1) * 1.0;
+            camera.position.y = 4 + Math.sin(time * 0.15) * 0.3;
             camera.lookAt(0, 0, 0);
 
             renderer.render(scene, camera);

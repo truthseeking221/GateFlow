@@ -1,4 +1,5 @@
 import { ShieldCheck, Zap, Database, Globe } from 'lucide-react';
+import { useOrbitalWebGL } from '../hooks/useOrbitalWebGL';
 
 const coreComponents = [
   { icon: ShieldCheck, title: 'Secure Core', desc: 'Bank-grade security and isolated execution.' },
@@ -8,8 +9,12 @@ const coreComponents = [
 ];
 
 export default function OrbitalSection() {
+  const canvasRef = useOrbitalWebGL();
+
   return (
     <section className="min-h-[500px] flex flex-col pt-24 pb-24 relative bg-black border-y border-white/10 font-sans overflow-hidden">
+      <canvas ref={canvasRef} className="absolute top-0 right-0 w-full h-full pointer-events-none opacity-50 z-0 mix-blend-screen -translate-y-12" />
+
       <div className="text-center max-w-3xl mx-auto px-6 mb-16 flex flex-col items-center relative z-10">
         <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/[0.02] border border-white/[0.08] rounded-full mb-6 relative font-sans text-[11px] text-[#4ade80] uppercase tracking-widest font-medium">
           <span className="w-1.5 h-1.5 bg-[#4ade80] rounded-full" />

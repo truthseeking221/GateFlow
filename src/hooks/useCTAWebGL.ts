@@ -29,7 +29,8 @@ export function useCTAWebGL() {
         camera.position.set(0, 5, 0); // Position slightly above the grid
         camera.lookAt(0, 5, -100);
 
-        const colorCyan = new THREE.Color('#06b6d4');
+        const colorEmerald = new THREE.Color('#4ade80');
+        const colorWhite = new THREE.Color('#ffffff');
 
         // Infinite Grid moving towards camera (Warp Speed / Digital Landscape feel)
         const gridGeo = new THREE.PlaneGeometry(200, 1000, 40, 200);
@@ -47,10 +48,10 @@ export function useCTAWebGL() {
 
         // Tăng opacity của lưới lên một chút để tạo cảm giác dày & rõ rệt hơn
         const gridMat = new THREE.MeshBasicMaterial({
-            color: colorCyan,
+            color: colorWhite,
             wireframe: true,
             transparent: true,
-            opacity: 0.25
+            opacity: 0.03 // much fainter
         });
 
         // We need an array of grids to seamlessly loop
@@ -69,16 +70,16 @@ export function useCTAWebGL() {
         // Warp lines (Light speed streaks)
         // Để làm các đường line dày dặn hơn (thay vì phụ thuộc vào WebGL render 1px line render),
         // mình sử dụng hình trụ (Cylinder) trải dài để nó có ĐỘ DÀY thực sự trong không gian 3D.
-        const streaksCount = 150;
+        const streaksCount = 120;
         const streaksGroup = new THREE.Group();
         scene.add(streaksGroup);
 
-        const streakGeo = new THREE.CylinderGeometry(0.05, 0.05, 1, 4); // Thinner line
+        const streakGeo = new THREE.CylinderGeometry(0.02, 0.02, 1, 4); // Thinner line
         streakGeo.rotateX(Math.PI / 2); // align along Z axis
         const streakMat = new THREE.MeshBasicMaterial({
-            color: colorCyan,
+            color: colorEmerald,
             transparent: true,
-            opacity: 1.0,
+            opacity: 0.6,
             blending: THREE.AdditiveBlending
         });
 
@@ -90,7 +91,7 @@ export function useCTAWebGL() {
             const x = (Math.random() - 0.5) * 100;
             const y = (Math.random() * 40) + 2; // Above the grid
             const z = -400 - Math.random() * 400; // Far away
-            const length = 20 + Math.random() * 40; // Length of streak
+            const length = 15 + Math.random() * 30; // Length of streak
 
             mesh.position.set(x, y, z);
             mesh.scale.set(1, 1, length);
@@ -109,7 +110,7 @@ export function useCTAWebGL() {
             camera.updateProjectionMatrix();
 
             // Move the grid towards the camera
-            const speed = 1.5;
+            const speed = 1.0;
             gridGroup.position.z += speed;
 
             // Loop the grid seamlessly
@@ -120,7 +121,7 @@ export function useCTAWebGL() {
             // Animate streaks rushing past
             for (let i = 0; i < streaksCount; i++) {
                 const data = streaksData[i];
-                data.mesh.position.z += data.speed * 2; // Moving fast towards camera
+                data.mesh.position.z += data.speed * 1.5; // less frantic
 
                 if (data.mesh.position.z > 50) { // Passed the camera
                     data.mesh.position.z = -400 - Math.random() * 200;
@@ -131,7 +132,7 @@ export function useCTAWebGL() {
 
             // Optional subtle camera sway for dynamics
             const time = performance.now() * 0.001;
-            camera.rotation.z = Math.sin(time * 0.5) * 0.02;
+            camera.rotation.z = Math.sin(time * 0.3) * 0.01;
 
             renderer.render(scene, camera);
         };
