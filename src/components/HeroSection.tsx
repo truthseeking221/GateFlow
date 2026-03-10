@@ -1,12 +1,18 @@
 import { Shield, Zap, Activity, GitCommit, Network, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useHeroWebGL } from '../hooks/useHeroWebGL';
 
 export default function HeroSection() {
+  const canvasRef = useHeroWebGL();
+
   return (
     <section className="relative w-full min-h-[90vh] flex flex-col items-center justify-center px-6 pt-32 pb-12 bg-black overflow-hidden font-sans border-b border-white/10">
 
+      {/* WebGL Background Canvas */}
+      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none opacity-80 z-0 mix-blend-screen" />
+
       {/* Background radial gradient to give it a subtle glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-white opacity-[0.03] rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-white opacity-[0.03] rounded-full blur-[120px] pointer-events-none z-10" />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-16 max-w-7xl mx-auto w-full z-10 relative">
 
