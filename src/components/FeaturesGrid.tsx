@@ -1,10 +1,10 @@
 import { useRevealOnScroll } from '../hooks/useRevealOnScroll';
-import { useParticlesWebGL } from '../hooks/useParticlesWebGL';
+import { useGlobeWebGL } from '../hooks/useGlobeWebGL';
 import { Route, Globe, ShieldCheck, CreditCard } from 'lucide-react';
 
 export default function FeaturesGrid() {
   const sectionRef = useRevealOnScroll<HTMLElement>();
-  const canvasRef = useParticlesWebGL();
+  const canvasRef = useGlobeWebGL();
 
   const features = [
     {
@@ -78,38 +78,40 @@ export default function FeaturesGrid() {
   ];
 
   return (
-    <section id="features" ref={sectionRef} className="max-w-7xl mx-auto pt-24 px-6 pb-24 relative bg-black font-sans border-b border-white/10 overflow-hidden">
-      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none opacity-40 z-0 mix-blend-screen" />
+    <section id="features" ref={sectionRef} className="w-full relative bg-black font-sans border-b border-white/10 overflow-hidden">
+      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none opacity-50 z-0 mix-blend-screen" />
 
-      <div className="mb-16 flex flex-col items-start border-b border-white/10 pb-12 relative z-10">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/[0.02] border border-white/[0.08] rounded-full mb-6 relative font-sans text-[11px] text-[#4ade80] uppercase tracking-widest font-medium">
-          <span className="w-1.5 h-1.5 bg-[#4ade80] rounded-full" />
-          Capabilities
-        </div>
-        <h2 className="text-4xl md:text-6xl font-sans font-bold text-white tracking-tighter mb-4">
-          Scale instantly.
-        </h2>
-        <p className="text-lg text-white/50 font-sans max-w-2xl font-medium">
-          Manage AI traffic in production without limits or downtime.
-        </p>
-      </div>
-
-      {/* Zero Trust Bento Grid: no bg hover, only borders */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-0 border-t border-l border-white/10">
-        {features.map((feature) => (
-          <div key={feature.id} className="relative w-full group bg-black p-10 flex flex-col justify-between border-b border-r border-white/10 transition-colors">
-            <div className="h-full">
-              <div className="mb-8 w-12 h-12 bg-white/[0.02] flex items-center justify-center border border-white/10 group-hover:border-white/30 transition-colors rounded-lg">
-                {feature.icon}
-              </div>
-              <h3 className="text-xl font-bold text-white mb-3 tracking-tight">{feature.title}</h3>
-              <p className="text-white/50 font-sans text-sm font-medium leading-relaxed max-w-sm">{feature.desc}</p>
-            </div>
-            <div className="mt-auto">
-              {feature.visual}
-            </div>
+      <div className="max-w-7xl mx-auto pt-24 px-6 pb-24 relative z-10">
+        <div className="mb-16 flex flex-col items-start border-b border-white/10 pb-12 relative z-10">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/[0.02] border border-white/[0.08] rounded-full mb-6 relative font-sans text-[11px] text-[#4ade80] uppercase tracking-widest font-medium">
+            <span className="w-1.5 h-1.5 bg-[#4ade80] rounded-full" />
+            Capabilities
           </div>
-        ))}
+          <h2 className="text-4xl md:text-6xl font-sans font-bold text-white tracking-tighter mb-4">
+            Scale instantly.
+          </h2>
+          <p className="text-lg text-white/50 font-sans max-w-2xl font-medium">
+            Manage AI traffic in production without limits or downtime.
+          </p>
+        </div>
+
+        {/* Zero Trust Bento Grid: no bg hover, only borders */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-0 border-t border-l border-white/10">
+          {features.map((feature) => (
+            <div key={feature.id} className="relative w-full group bg-[#050505] p-10 flex flex-col justify-between border-b border-r border-white/10 transition-colors shadow-[0_4px_20px_rgba(0,0,0,0.5)]">
+              <div className="h-full">
+                <div className="mb-8 w-12 h-12 bg-white/[0.02] flex items-center justify-center border border-white/10 group-hover:border-white/30 transition-colors rounded-lg">
+                  {feature.icon}
+                </div>
+                <h3 className="text-xl font-bold text-white mb-3 tracking-tight">{feature.title}</h3>
+                <p className="text-white/50 font-sans text-sm font-medium leading-relaxed max-w-sm">{feature.desc}</p>
+              </div>
+              <div className="mt-auto">
+                {feature.visual}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );
