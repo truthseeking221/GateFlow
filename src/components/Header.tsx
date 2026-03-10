@@ -25,8 +25,18 @@ export default function Header() {
     <header className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${scrolled ? 'bg-black/80 backdrop-blur-md border-b border-white/10' : 'bg-transparent border-b border-transparent'}`}>
       <div className="max-w-7xl mx-auto px-6 h-16 w-full flex items-center justify-between">
         {/* Brand */}
-        <a href="#" className="flex items-center gap-2">
-          <span className="font-sans font-semibold text-white tracking-tight text-base">
+        <a href="#" className="flex items-center gap-1 group">
+          <div className="relative flex items-center justify-center w-8 h-8 mr-1">
+            <div className="absolute inset-0 bg-[#4ade80]/20 blur-md rounded-full opacity-50 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="relative z-10 transform group-hover:rotate-180 transition-transform duration-700 ease-out">
+              <circle cx="16" cy="16" r="14" stroke="rgba(255,255,255,0.1)" strokeWidth="1.5" />
+              <path d="M16 6 A10 10 0 0 1 26 16" stroke="rgba(255,255,255,0.9)" strokeWidth="2" strokeLinecap="round" />
+              <path d="M16 26 A10 10 0 0 1 6 16" stroke="rgba(255,255,255,0.2)" strokeWidth="2" strokeLinecap="round" />
+              <circle cx="16" cy="16" r="4" fill="#4ade80" />
+              <circle cx="16" cy="16" r="1.5" fill="#ffffff" />
+            </svg>
+          </div>
+          <span className="font-sans font-bold text-white tracking-tight text-lg relative top-[1px]">
             GateFlow
           </span>
         </a>
