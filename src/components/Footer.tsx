@@ -36,7 +36,7 @@ export default function Footer() {
               Unified AI API Gateway. One endpoint for 100+ models.
             </p>
             <div className="mt-8 font-mono text-[10px] text-gray-600">
-              SYS.VER // <span className="text-cyan-500">7.0.0-RC1</span>
+              SYS.VER // <span className="text-cyan-500">7.0.0</span>
             </div>
           </div>
 
