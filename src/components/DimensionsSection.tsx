@@ -43,7 +43,7 @@ export default function DimensionsSection() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-0 relative z-10 shadow-[0_4px_30px_rgba(0,0,0,0.8)] border-t border-l border-white/10">
-          {columns.map((col, i) => (
+          {columns.map((col) => (
             <div
               key={col.title}
               className={`bg-[#050505] p-8 md:p-12 flex flex-col items-start group hover:bg-[#0a0a0a] transition-colors border-b border-r border-white/10`}
